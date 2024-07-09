@@ -6,15 +6,22 @@ import Navbar from '../../components/Navbar';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 
+type Report = {
+  id: string;
+  status: boolean;
+  lastupdated: any;
+  comment: string;
+};
+
 const Reports = () => {
-  const [reports, setReports] = useState([]);
+  const [reports, setReports] = useState<Report[]>([]);
   const [newReport, setNewReport] = useState({ id: '', status: true, lastupdated: '', comment: '' });
-  const [selectedReport, setSelectedReport] = useState(null);
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
 
   useEffect(() => {
     const fetchReports = async () => {
       const querySnapshot = await getDocs(collection(db, "ERs"));
-      const reportsList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+      const reportsList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Report));
       setReports(reportsList);
     };
 
@@ -28,19 +35,21 @@ const Reports = () => {
       lastupdated: serverTimestamp()
     });
     const querySnapshot = await getDocs(collection(db, "ERs"));
-    const reportsList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    const reportsList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Report));
     setReports(reportsList);
     setNewReport({ id: '', status: true, lastupdated: '', comment: '' });
   };
 
   const handleUpdateReport = async () => {
+    if (!selectedReport) return;
+
     const reportRef = doc(db, "ERs", selectedReport.id);
     await updateDoc(reportRef, {
       ...selectedReport,
       lastupdated: serverTimestamp()
     });
     const querySnapshot = await getDocs(collection(db, "ERs"));
-    const reportsList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    const reportsList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Report));
     setReports(reportsList);
     setSelectedReport(null);
   };

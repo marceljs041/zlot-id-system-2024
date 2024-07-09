@@ -6,10 +6,22 @@ import Navbar from '../../components/Navbar';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, updateDoc, doc, writeBatch } from 'firebase/firestore';
 
+type Person = {
+  id: string;
+  Name: string;
+  Stopien: string;
+  Rodzaj: string;
+  Zlot: string;
+  Hufiec: string;
+  Podoboz: string;
+  'Current Location': string;
+  onsite: boolean;
+};
+
 const Roster = () => {
-  const [roster, setRoster] = useState([]);
-  const [filteredRoster, setFilteredRoster] = useState([]);
-  const [selectedPersons, setSelectedPersons] = useState([]);
+  const [roster, setRoster] = useState<Person[]>([]);
+  const [filteredRoster, setFilteredRoster] = useState<Person[]>([]);
+  const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showOnsiteModal, setShowOnsiteModal] = useState(false);
   const [newLocation, setNewLocation] = useState("");
@@ -19,7 +31,7 @@ const Roster = () => {
   useEffect(() => {
     const fetchRoster = async () => {
       const querySnapshot = await getDocs(collection(db, "IDs"));
-      const rosterList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+      const rosterList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Person));
       setRoster(rosterList);
       setFilteredRoster(rosterList);
     };
@@ -37,7 +49,7 @@ const Roster = () => {
     );
   }, [searchQuery, roster]);
 
-  const toggleSelection = (id) => {
+  const toggleSelection = (id: string) => {
     setSelectedPersons((prev) =>
       prev.includes(id) ? prev.filter((personId) => personId !== id) : [...prev, id]
     );
@@ -52,7 +64,7 @@ const Roster = () => {
     await batch.commit();
 
     const querySnapshot = await getDocs(collection(db, "IDs"));
-    const rosterList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    const rosterList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Person));
     setRoster(rosterList);
     setShowLocationModal(false);
     setSelectedPersons([]);
@@ -68,7 +80,7 @@ const Roster = () => {
     await batch.commit();
 
     const querySnapshot = await getDocs(collection(db, "IDs"));
-    const rosterList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    const rosterList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Person));
     setRoster(rosterList);
     setShowOnsiteModal(false);
     setSelectedPersons([]);
