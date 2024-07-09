@@ -6,12 +6,19 @@ import Navbar from '../../components/Navbar';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 
+type Report = {
+  id: string;
+  status: boolean;
+  lastupdated?: any;
+  comment?: string;
+};
+
 const MainMenu = () => {
   const [onsiteCount, setOnsiteCount] = useState(0);
   const [offsiteCount, setOffsiteCount] = useState(0);
   const [activeReportsCount, setActiveReportsCount] = useState(0);
-  const [activeReports, setActiveReports] = useState([]);
-  const [selectedReport, setSelectedReport] = useState(null);
+  const [activeReports, setActiveReports] = useState<Report[]>([]);
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -27,7 +34,7 @@ const MainMenu = () => {
 
     const fetchReports = async () => {
       const reportsSnapshot = await getDocs(collection(db, "ERs"));
-      const reportsList = reportsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+      const reportsList = reportsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Report));
 
       const activeReports = reportsList.filter(report => report.status);
       setActiveReports(activeReports);
@@ -39,13 +46,16 @@ const MainMenu = () => {
   }, []);
 
   const handleUpdateReport = async () => {
+    if (!selectedReport) return;
+
     const reportRef = doc(db, "ERs", selectedReport.id);
     await updateDoc(reportRef, {
       ...selectedReport,
       lastupdated: serverTimestamp()
     });
-    const querySnapshot = await getDocs(collection(db, "ERs"));
-    const reportsList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+
+    const reportsSnapshot = await getDocs(collection(db, "ERs"));
+    const reportsList = reportsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Report));
     setActiveReports(reportsList.filter(report => report.status));
     setActiveReportsCount(reportsList.filter(report => report.status).length);
     setSelectedReport(null);
