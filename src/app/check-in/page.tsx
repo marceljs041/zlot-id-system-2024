@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Navbar from '../../components/Navbar';
+import withAuth from '../../components/withAuth';
 
 const CheckIn = () => {
   const [id, setId] = useState('');
@@ -46,4 +47,4 @@ const CheckIn = () => {
   );
 };
 
-export default CheckIn;
+export default withAuth(CheckIn);

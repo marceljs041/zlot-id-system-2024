@@ -5,6 +5,7 @@ import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
+import withAuth from '../../components/withAuth';
 
 type Report = {
   id: string;
@@ -164,4 +165,4 @@ const MainMenu = () => {
   );
 };
 
-export default MainMenu;
+export default withAuth(MainMenu);

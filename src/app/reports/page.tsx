@@ -5,6 +5,7 @@ import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
+import withAuth from '../../components/withAuth';
 
 type Report = {
   id: string;
@@ -170,4 +171,4 @@ const Reports = () => {
   );
 };
 
-export default Reports;
+export default withAuth(Reports);

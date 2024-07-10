@@ -5,6 +5,7 @@ import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, updateDoc, doc, writeBatch } from 'firebase/firestore';
+import withAuth from '../../components/withAuth';
 
 type Person = {
   id: string;
@@ -240,4 +241,4 @@ const Roster = () => {
   );
 };
 
-export default Roster;
+export default withAuth(Roster);
